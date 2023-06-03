@@ -1,29 +1,35 @@
 public class Main {
     public static void main(String[] args) {
-        WeightedGraph<String> graph = new WeightedGraph<>();
+        WeightedGraph<String> graph = new WeightedGraph<>(false);
 
-        Vertex<String> v0 = new Vertex<>("A");
-        Vertex<String> v1 = new Vertex<>("B");
-        Vertex<String> v2 = new Vertex<>("C");
-        Vertex<String> v3 = new Vertex<>("D");
+        Vertex<String> vertexA = new Vertex<>("A");
+        Vertex<String> vertexB = new Vertex<>("B");
+        Vertex<String> vertexC = new Vertex<>("C");
+        Vertex<String> vertexD = new Vertex<>("D");
+        Vertex<String> vertexE = new Vertex<>("E");
+        Vertex<String> vertexF = new Vertex<>("F");
 
-        v0.addAdjacentVertex(v1, 2.0);
-        v0.addAdjacentVertex(v2, 4.0);
-        v1.addAdjacentVertex(v2, 1.0);
-        v1.addAdjacentVertex(v3, 5.0);
-        v2.addAdjacentVertex(v3, 3.0);
+        graph.addVertex(vertexA);
+        graph.addVertex(vertexB);
+        graph.addVertex(vertexC);
+        graph.addVertex(vertexD);
+        graph.addVertex(vertexE);
+        graph.addVertex(vertexF);
 
-        graph.addVertex(v0);
-        graph.addVertex(v1);
-        graph.addVertex(v2);
-        graph.addVertex(v3);
+        graph.addEdge(vertexA, vertexB, 0.5);
+        graph.addEdge(vertexA, vertexC, 1);
+        graph.addEdge(vertexC, vertexE, 4);
+        graph.addEdge(vertexE, vertexB, 4);
+        graph.addEdge(vertexE, vertexF, 1);
+        graph.addEdge(vertexD, vertexF, 1);
+        graph.addEdge(vertexC, vertexD, 1);
 
-        Search<String> bfs = new BreadthFirstSearch<>(graph);
-        System.out.println("BFS:");
-        bfs.search(v0);
+        System.out.println("Breadth First Search:");
+        BreadthFirstSearch<String> bfs = new BreadthFirstSearch<>(graph);
+        bfs.search(vertexA);
 
-        Search<String> dijkstra = new DijkstraSearch<>(graph);
-        System.out.println("\nDijkstra:");
-        dijkstra.search(v0);
+        System.out.println("\nDijkstra Search:");
+        DijkstraSearch<String> dijkstra = new DijkstraSearch<>(graph);
+        dijkstra.search(vertexA);
     }
 }

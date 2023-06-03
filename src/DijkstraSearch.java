@@ -1,46 +1,68 @@
 import java.util.*;
-
 class DijkstraSearch<V> implements Search<V> {
     private WeightedGraph<V> graph;
 
-    DijkstraSearch(WeightedGraph<V> graph) {
+    public DijkstraSearch(WeightedGraph<V> graph) {
         this.graph = graph;
     }
 
+    @Override
     public void search(Vertex<V> start) {
-        Map<Vertex<V>, Double> distance = new HashMap<>();
-        PriorityQueue<Vertex<V>> queue = new PriorityQueue<>(Comparator.comparingDouble(distance::get));
-        Map<Vertex<V>, Vertex<V>> previous = new HashMap<>();
+        PriorityQueue<Edge<V>> queue = new PriorityQueue<>(Comparator.comparingDouble(Edge::getWeight));
+        Map<Vertex<V>, Double> distances = new HashMap<>();
+        Map<Vertex<V>, Vertex<V>> previousVertices = new HashMap<>();
 
+        // Initialize distances
         for (Vertex<V> vertex : graph.getVertices()) {
-            distance.put(vertex, Double.POSITIVE_INFINITY);
-            previous.put(vertex, null);
+            if (vertex.equals(start)) {
+                distances.put(vertex, 0.0);
+            } else {
+                distances.put(vertex, Double.POSITIVE_INFINITY);
+            }
         }
 
-        distance.put(start, 0.0);
-        queue.add(start);
+        queue.offer(new Edge<>(null, start, 0.0));
 
         while (!queue.isEmpty()) {
-            Vertex<V> current = queue.poll();
+            Edge<V> edge = queue.poll();
+            Vertex<V> current = edge.getDestination();
 
-            for (Map.Entry<Vertex<V>, Double> entry : current.getAdjacentVertices().entrySet()) {
-                Vertex<V> neighbor = entry.getKey();
-                double weight = entry.getValue();
-                double newDistance = distance.get(current) + weight;
+            if (distances.get(current) < edge.getWeight()) {
+                continue;
+            }
 
-                if (newDistance < distance.get(neighbor)) {
-                    distance.put(neighbor, newDistance);
-                    previous.put(neighbor, current);
-                    // Remove and re-add the neighbor to update its position in the priority queue
-                    queue.remove(neighbor);
-                    queue.add(neighbor);
+            for (Edge<V> nextEdge : graph.getEdges(current)) {
+                Vertex<V> next = nextEdge.getDestination();
+                double newDistance = distances.get(current) + nextEdge.getWeight();
+
+                if (newDistance < distances.get(next)) {
+                    distances.put(next, newDistance);
+                    previousVertices.put(next, current);
+                    queue.offer(new Edge<>(current, next, newDistance));
                 }
             }
         }
 
-        System.out.println("Shortest distances from vertex " + start.getData() + ":");
         for (Vertex<V> vertex : graph.getVertices()) {
-            System.out.println("Vertex: " + vertex.getData() + ", Distance: " + distance.get(vertex));
+            if (!vertex.equals(start)) {
+                System.out.println("Shortest path to " + vertex.getData() + ":");
+                printShortestPath(vertex, previousVertices);
+                System.out.println();
+            }
+        }
+    }
+
+    private void printShortestPath(Vertex<V> vertex, Map<Vertex<V>, Vertex<V>> previousVertices) {
+        Stack<Vertex<V>> stack = new Stack<>();
+        stack.push(vertex);
+
+        while (previousVertices.containsKey(vertex)) {
+            vertex = previousVertices.get(vertex);
+            stack.push(vertex);
+        }
+
+        while (!stack.isEmpty()) {
+            System.out.print(stack.pop().getData() + " ");
         }
     }
 }
