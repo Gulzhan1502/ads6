@@ -11,7 +11,7 @@ class BreadthFirstSearch<V> implements Search<V> {
         boolean[] visited = new boolean[graph.getVertices().size()];
         Queue<Vertex<V>> queue = new LinkedList<>();
 
-        visited[start.hashCode()] = true;
+        visited[graph.getVertices().indexOf(start)] = true;
         queue.add(start);
 
         while (!queue.isEmpty()) {
@@ -19,8 +19,9 @@ class BreadthFirstSearch<V> implements Search<V> {
             System.out.println("Visited vertex: " + current.getData());
 
             for (Vertex<V> neighbor : current.getAdjacentVertices().keySet()) {
-                if (!visited[neighbor.hashCode()]) {
-                    visited[neighbor.hashCode()] = true;
+                int index = graph.getVertices().indexOf(neighbor);
+                if (index != -1 && !visited[index]) {
+                    visited[index] = true;
                     queue.add(neighbor);
                 }
             }

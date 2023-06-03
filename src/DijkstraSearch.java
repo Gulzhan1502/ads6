@@ -31,14 +31,16 @@ class DijkstraSearch<V> implements Search<V> {
                 if (newDistance < distance.get(neighbor)) {
                     distance.put(neighbor, newDistance);
                     previous.put(neighbor, current);
+                    // Remove and re-add the neighbor to update its position in the priority queue
+                    queue.remove(neighbor);
                     queue.add(neighbor);
                 }
             }
         }
 
         System.out.println("Shortest distances from vertex " + start.getData() + ":");
-        for (Map.Entry<Vertex<V>, Double> entry : distance.entrySet()) {
-            System.out.println("Vertex: " + entry.getKey().getData() + ", Distance: " + entry.getValue());
+        for (Vertex<V> vertex : graph.getVertices()) {
+            System.out.println("Vertex: " + vertex.getData() + ", Distance: " + distance.get(vertex));
         }
     }
 }
