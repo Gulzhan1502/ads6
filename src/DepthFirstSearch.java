@@ -1,25 +1,49 @@
 import java.util.*;
-
-class DepthFirstSearch<V> implements Search<V> {
+public class DepthFirstSearch<V> implements Search<V> {
     private WeightedGraph<V> graph;
+    private Vertex<V> start;
+    private Set<Vertex<V>> visited;
+    private Map<Vertex<V>, Vertex<V>> pathTo;
 
-    DepthFirstSearch(WeightedGraph<V> graph) {
+    public DepthFirstSearch(WeightedGraph<V> graph, Vertex<V> start) {
         this.graph = graph;
+        this.start = start;
+        this.visited = new HashSet<>();
+        this.pathTo = new HashMap<>();
     }
 
-    public void search(Vertex<V> start) {
-        boolean[] visited = new boolean[graph.getVertices().size()];
-        dfs(start, visited);
+    public List<Vertex<V>> pathTo(Vertex<V> key) {
+        Vertex<V> keyVertex = key;
+
+        if (start == null || keyVertex == null)
+            return Collections.emptyList();
+
+        dfs(start);
+
+        return buildPath(keyVertex);
     }
 
-    private void dfs(Vertex<V> vertex, boolean[] visited) {
-        visited[vertex.hashCode()] = true;
-        System.out.println("Visited vertex: " + vertex.getData());
+    private void dfs(Vertex<V> vertex) {
+        visited.add(vertex);
 
-        for (Vertex<V> neighbor : vertex.getAdjacentVertices().keySet()) {
-            if (!visited[neighbor.hashCode()]) {
-                dfs(neighbor, visited);
+        for (Edge<V> edge : graph.getMap().get(vertex)) {
+            Vertex<V> neighbor = edge.getDest();
+            if (!visited.contains(neighbor)) {
+                pathTo.put(neighbor, vertex);
+                dfs(neighbor);
             }
         }
+    }
+
+    private List<Vertex<V>> buildPath(Vertex<V> keyVertex) {
+        List<Vertex<V>> result = new ArrayList<>();
+        Vertex<V> current = keyVertex;
+
+        while (current != null) {
+            result.add(0, current);
+            current = pathTo.get(current);
+        }
+
+        return result;
     }
 }

@@ -1,35 +1,45 @@
+import java.util.*;
 public class Main {
     public static void main(String[] args) {
-        WeightedGraph<String> graph = new WeightedGraph<>(false);
+        WeightedGraph<String> graph = new WeightedGraph<>();
 
-        Vertex<String> vertexA = new Vertex<>("A");
-        Vertex<String> vertexB = new Vertex<>("B");
-        Vertex<String> vertexC = new Vertex<>("C");
-        Vertex<String> vertexD = new Vertex<>("D");
-        Vertex<String> vertexE = new Vertex<>("E");
-        Vertex<String> vertexF = new Vertex<>("F");
+        Vertex<String> almaty = new Vertex<>("Almaty");
+        Vertex<String> astana = new Vertex<>("Astana");
+        Vertex<String> shymkent = new Vertex<>("Shymkent");
+        Vertex<String> kostanay = new Vertex<>("Kostanay");
+        Vertex<String> kyzylorda = new Vertex<>("Kyzylorda");
 
-        graph.addVertex(vertexA);
-        graph.addVertex(vertexB);
-        graph.addVertex(vertexC);
-        graph.addVertex(vertexD);
-        graph.addVertex(vertexE);
-        graph.addVertex(vertexF);
+        graph.addEdge(almaty, astana, 2.1);
+        graph.addEdge(almaty, shymkent, 7.2);
+        graph.addEdge(shymkent, astana, 3.9);
+        graph.addEdge(astana, kostanay, 3.5);
+        graph.addEdge(shymkent, kyzylorda, 5.4);
 
-        graph.addEdge(vertexA, vertexB, 0.5);
-        graph.addEdge(vertexA, vertexC, 1);
-        graph.addEdge(vertexC, vertexE, 4);
-        graph.addEdge(vertexE, vertexB, 4);
-        graph.addEdge(vertexE, vertexF, 1);
-        graph.addEdge(vertexD, vertexF, 1);
-        graph.addEdge(vertexC, vertexD, 1);
+        System.out.println("Dijkstra:");
+        Search<String> dijkstra = new DijkstraSearch<>(graph, almaty);
+        outputPath(dijkstra, kyzylorda);
 
-        System.out.println("Breadth First Search:");
-        BreadthFirstSearch<String> bfs = new BreadthFirstSearch<>(graph);
-        bfs.search(vertexA);
+        System.out.println("\nDFS:");
+        Search<String> dfs = new DepthFirstSearch<>(graph, almaty);
+        outputPath(dfs, kyzylorda);
 
-        System.out.println("\nDijkstra Search:");
-        DijkstraSearch<String> dijkstra = new DijkstraSearch<>(graph);
-        dijkstra.search(vertexA);
+        System.out.println("\n--------------------------------");
+
+        System.out.println("BFS:");
+        Search<String> bfs = new BreadthFirstSearch<>(graph, almaty);
+        outputPath(bfs, kyzylorda);
+    }
+
+    public static void outputPath(Search<String> search, Vertex<String> key) {
+        List<Vertex<String>> path = search.pathTo(key);
+        if (path.isEmpty()) {
+            System.out.println("No path found.");
+        } else {
+            for (Vertex<String> v : path) {
+                System.out.print(v.getData() + " -> ");
+            }
+        }
+        System.out.println(key.getData());
     }
 }
+

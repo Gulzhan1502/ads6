@@ -1,3 +1,4 @@
-interface Search<V> {
-    void search(Vertex<V> start);
+import java.util.*;
+public interface Search<V> {
+    List<Vertex<V>> pathTo(Vertex<V> key);
 }

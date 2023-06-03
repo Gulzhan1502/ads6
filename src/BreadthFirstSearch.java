@@ -1,33 +1,51 @@
-import java.util.Queue;
-import java.util.LinkedList;
 import java.util.*;
-
-class BreadthFirstSearch<V> implements Search<V> {
+public class BreadthFirstSearch<V> implements Search<V> {
     private WeightedGraph<V> graph;
+    private Vertex<V> start;
 
-    public BreadthFirstSearch(WeightedGraph<V> graph) {
+    public BreadthFirstSearch(WeightedGraph<V> graph, Vertex<V> start) {
         this.graph = graph;
+        this.start = start;
     }
 
-    @Override
-    public void search(Vertex<V> start) {
+    public List<Vertex<V>> pathTo(Vertex<V> key) {
         Queue<Vertex<V>> queue = new LinkedList<>();
-        Set<Vertex<V>> visited = new HashSet<>();
+        Map<Vertex<V>, Vertex<V>> path = new HashMap<>();
+        Vertex<V> keyVertex = key;
+
+        if (start == null || keyVertex == null)
+            return Collections.emptyList();
 
         queue.offer(start);
-        visited.add(start);
+        path.put(start, null);
 
         while (!queue.isEmpty()) {
             Vertex<V> current = queue.poll();
-            System.out.println(current.getData());
+            if (current.equals(keyVertex)) {
+                return buildPath(path, keyVertex);
+            }
 
-            Map<Vertex<V>, Double> adjacentVertices = current.getAdjacentVertices();
-            for (Vertex<V> neighbor : adjacentVertices.keySet()) {
-                if (!visited.contains(neighbor)) {
+            for (Edge<V> edge : graph.getMap().get(current)) {
+                Vertex<V> neighbor = edge.getDest();
+                if (!path.containsKey(neighbor)) {
                     queue.offer(neighbor);
-                    visited.add(neighbor);
+                    path.put(neighbor, current);
                 }
             }
         }
+
+        return Collections.emptyList();
+    }
+
+    private List<Vertex<V>> buildPath(Map<Vertex<V>, Vertex<V>> path, Vertex<V> keyVertex) {
+        List<Vertex<V>> result = new ArrayList<>();
+        Vertex<V> current = keyVertex;
+
+        while (current != null) {
+            result.add(0, current);
+            current = path.get(current);
+        }
+
+        return result;
     }
 }
